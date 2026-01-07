@@ -1,8 +1,10 @@
+import { useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { motion } from 'framer-motion'
 
 const Footer = () => {
   const location = useLocation()
+  const [imgError, setImgError] = useState(false) // State to handle broken logo
   
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' })
@@ -36,7 +38,28 @@ const Footer = () => {
           <div className="md:col-span-5 space-y-8">
             <Link to="/" onClick={scrollToTop} className="inline-block group">
               <h2 className="text-3xl font-black tracking-tight flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-gradient-to-r from-pink-600 to-purple-600 animate-pulse group-hover:scale-110 transition-transform" />
+                
+                {/* --- LOGO FIX START --- */}
+                <div className="relative w-10 h-10 flex items-center justify-center">
+                  {/* Glow Effect */}
+                  <div className="absolute inset-0 bg-gradient-to-r from-pink-500 to-purple-500 rounded-full blur opacity-75 group-hover:opacity-100 transition-opacity animate-pulse" />
+                  
+                  {/* Image Container */}
+                  <div className="relative w-9 h-9 bg-black rounded-full flex items-center justify-center border border-white/20 overflow-hidden">
+                    {!imgError ? (
+                      <img 
+                        src="/logo.jpg" 
+                        alt="Rockers Logo" 
+                        className="w-full h-full object-contain p-0.5" 
+                        onError={() => setImgError(true)} 
+                      />
+                    ) : (
+                      <span className="text-white font-bold text-sm">R</span>
+                    )}
+                  </div>
+                </div>
+                {/* --- LOGO FIX END --- */}
+
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-white to-gray-400">
                   Rockers
                 </span>

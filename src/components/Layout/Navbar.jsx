@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
+  const [imgError, setImgError] = useState(false)
   const location = useLocation()
 
   // Handle scroll effect
@@ -70,14 +71,28 @@ const Navbar = () => {
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between">
           
-          {/* --- LOGO --- */}
+          {/* --- LOGO SECTION --- */}
           <Link to="/" className="flex items-center gap-3 group">
             <div className="relative w-10 h-10 flex items-center justify-center">
+              {/* Glow Effect */}
               <div className="absolute inset-0 bg-gradient-to-r from-pink-500 to-purple-500 rounded-full blur opacity-75 group-hover:opacity-100 transition-opacity animate-pulse" />
-              <div className="relative w-8 h-8 bg-black rounded-full flex items-center justify-center border border-white/20">
-                <span className="text-sm">R</span>
+              
+              {/* Image Container */}
+              <div className="relative w-9 h-9 bg-black rounded-full flex items-center justify-center border border-white/20 overflow-hidden">
+                {!imgError ? (
+                  <img 
+                    src="/logo.jpg" 
+                    alt="Rockers Logo" 
+                    // FIXED: Changed object-cover to object-contain so it fits inside
+                    className="w-full h-full object-contain p-0.5" 
+                    onError={() => setImgError(true)} 
+                  />
+                ) : (
+                  <span className="text-white font-bold text-sm">R</span>
+                )}
               </div>
             </div>
+            
             <div className="flex flex-col">
               <span className="text-2xl font-black tracking-tight text-white group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-white group-hover:to-gray-400 transition-all">
                 Rockers
