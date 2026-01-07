@@ -21,17 +21,12 @@ function App() {
   const [audioEnabled, setAudioEnabled] = useState(false)
 
   useEffect(() => {
-    // MODIFIED: Removed localStorage check to force popup on every refresh
-    // We only check if it's mobile (to avoid auto-play issues on phones)
-    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)
-    
-    if (!isMobile) {
-      setShowPopup(true)
-    }
+    // FIX: Removed the 'isMobile' check. 
+    // Now the popup will trigger on ALL devices every time the site refreshes.
+    setShowPopup(true)
   }, [])
 
   const handleSoundChoice = (choice) => {
-    // We don't save to localStorage anymore so it resets every time
     setAudioEnabled(choice)
     setShowPopup(false)
   }
@@ -40,7 +35,9 @@ function App() {
     <Router>
       <div className="min-h-screen bg-black relative overflow-hidden">
         
+        {/* Floating Background */}
         <FloatingElements />
+
         <Navbar />
         
         <Routes>
@@ -57,9 +54,8 @@ function App() {
         
         <Footer />
         
-        {/* Pass audioEnabled state to controls */}
+        {/* Audio & Popup */}
         <AudioControls enabled={audioEnabled} />
-        
         {showPopup && <FirstVisitPopup onChoice={handleSoundChoice} />}
       </div>
     </Router>

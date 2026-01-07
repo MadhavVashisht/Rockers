@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 
-// 1. Music & Dance SVG Assets
 const icons = {
   note: (
     <svg viewBox="0 0 24 24" fill="currentColor" className="w-full h-full drop-shadow-lg">
@@ -37,23 +36,29 @@ const FloatingElements = () => {
   const [particles, setParticles] = useState([]);
 
   useEffect(() => {
-    // Generate 30 floating items
-    const newParticles = Array.from({ length: 30 }).map((_, i) => {
+    // OPTIMIZATION: Check if device is mobile
+    const isMobile = window.innerWidth < 768;
+    
+    // Reduce particle count on mobile to prevent lag (30 on desktop, 12 on mobile)
+    const particleCount = isMobile ? 12 : 30;
+
+    const newParticles = Array.from({ length: particleCount }).map((_, i) => {
       const randomColor = Math.random();
       let colorClass;
 
-      if (randomColor < 0.33) colorClass = "text-pink-500/40";
-      else if (randomColor < 0.66) colorClass = "text-purple-500/40";
-      else colorClass = "text-white/20";
+      if (randomColor < 0.33) colorClass = "text-pink-500/30";
+      else if (randomColor < 0.66) colorClass = "text-purple-500/30";
+      else colorClass = "text-white/10";
 
       return {
         id: i,
         icon: iconKeys[Math.floor(Math.random() * iconKeys.length)],
         left: Math.random() * 100,
-        duration: 15 + Math.random() * 25,
+        // Faster animations on mobile to prevent "ghosting"
+        duration: isMobile ? 10 + Math.random() * 15 : 15 + Math.random() * 25,
         delay: -(Math.random() * 40),
-        sway: 30 + Math.random() * 60,
-        size: 20 + Math.random() * 50,
+        sway: isMobile ? 20 : 30 + Math.random() * 60, // Less movement on small screens
+        size: isMobile ? 15 + Math.random() * 20 : 20 + Math.random() * 50,
         opacity: 0.2 + Math.random() * 0.5,
         colorClass: colorClass
       };
@@ -72,7 +77,7 @@ const FloatingElements = () => {
             left: `${p.left}%`,
             width: `${p.size}px`,
             height: `${p.size}px`,
-            filter: "blur(1px)",
+            filter: "blur(0.5px)", // Reduced blur radius for better performance
           }}
           initial={{ y: "110vh", opacity: 0, x: 0, rotate: 0 }}
           animate={{
