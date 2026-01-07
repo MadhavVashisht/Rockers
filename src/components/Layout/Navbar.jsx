@@ -8,7 +8,7 @@ const Navbar = () => {
   const [imgError, setImgError] = useState(false)
   const location = useLocation()
 
-  // Handle scroll effect
+  // 1. Handle Window Scroll (Glass effect on scroll)
   useEffect(() => {
     const handleScroll = () => {
       setScrolled(window.scrollY > 20)
@@ -16,6 +16,20 @@ const Navbar = () => {
     window.addEventListener('scroll', handleScroll)
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
+
+  // 2. NEW: Lock Body Scroll when Mobile Menu is Open
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden'
+    } else {
+      document.body.style.overflow = 'unset'
+    }
+    
+    // Cleanup function to reset overflow if component unmounts
+    return () => {
+      document.body.style.overflow = 'unset'
+    }
+  }, [isOpen])
 
   const navItems = [
     { name: 'Home', path: '/' },
@@ -42,7 +56,7 @@ const Navbar = () => {
     },
     open: {
       opacity: 1,
-      height: "auto",
+      height: "100vh", // Full screen height
       transition: {
         duration: 0.3,
         ease: "easeInOut",
@@ -63,7 +77,7 @@ const Navbar = () => {
       animate={{ y: 0 }}
       transition={{ duration: 0.6 }}
       className={`fixed top-0 w-full z-50 transition-all duration-300 border-b ${
-        scrolled 
+        scrolled || isOpen
           ? 'bg-black/80 backdrop-blur-xl border-white/10 py-3' 
           : 'bg-transparent border-transparent py-5'
       }`}
@@ -71,19 +85,15 @@ const Navbar = () => {
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between">
           
-          {/* --- LOGO SECTION --- */}
-          <Link to="/" className="flex items-center gap-3 group">
+          {/* --- LOGO --- */}
+          <Link to="/" className="flex items-center gap-3 group relative z-50">
             <div className="relative w-10 h-10 flex items-center justify-center">
-              {/* Glow Effect */}
               <div className="absolute inset-0 bg-gradient-to-r from-pink-500 to-purple-500 rounded-full blur opacity-75 group-hover:opacity-100 transition-opacity animate-pulse" />
-              
-              {/* Image Container */}
               <div className="relative w-9 h-9 bg-black rounded-full flex items-center justify-center border border-white/20 overflow-hidden">
                 {!imgError ? (
                   <img 
                     src="/logo.jpg" 
                     alt="Rockers Logo" 
-                    // FIXED: Changed object-cover to object-contain so it fits inside
                     className="w-full h-full object-contain p-0.5" 
                     onError={() => setImgError(true)} 
                   />
@@ -92,7 +102,6 @@ const Navbar = () => {
                 )}
               </div>
             </div>
-            
             <div className="flex flex-col">
               <span className="text-2xl font-black tracking-tight text-white group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-white group-hover:to-gray-400 transition-all">
                 Rockers
@@ -114,11 +123,6 @@ const Navbar = () => {
                   className="relative px-4 py-2 text-sm font-medium text-gray-300 hover:text-white transition-colors"
                 >
                   {item.name}
-                  
-                  {/* Hover Glow */}
-                  <div className="absolute inset-0 rounded-lg bg-white/5 opacity-0 hover:opacity-100 transition-opacity -z-10" />
-                  
-                  {/* Active Dot Indicator */}
                   {isActive && (
                     <motion.div
                       layoutId="activeNav"
@@ -160,9 +164,9 @@ const Navbar = () => {
               animate="open"
               exit="closed"
               variants={menuVariants}
-              className="lg:hidden overflow-hidden bg-zinc-900/95 backdrop-blur-xl border-t border-white/10 mt-4 rounded-2xl"
+              className="fixed inset-0 top-0 left-0 w-full h-screen bg-black/95 backdrop-blur-xl z-40 flex flex-col pt-24 px-4 overflow-y-auto"
             >
-              <div className="flex flex-col p-4 space-y-2">
+              <div className="flex flex-col space-y-2">
                 {navItems.map((item) => {
                   const isActive = location.pathname === item.path
                   return (
@@ -170,7 +174,7 @@ const Navbar = () => {
                       <Link
                         to={item.path}
                         onClick={() => setIsOpen(false)}
-                        className={`block px-4 py-3 rounded-xl text-lg font-medium transition-all ${
+                        className={`block px-6 py-4 rounded-xl text-xl font-bold transition-all ${
                           isActive 
                             ? 'bg-gradient-to-r from-pink-500/20 to-purple-500/20 text-white border border-pink-500/30' 
                             : 'text-gray-400 hover:text-white hover:bg-white/5'
